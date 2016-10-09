@@ -1,22 +1,22 @@
 <?php
 
-include_once './common.php';
+include_once './connect.php';
 
-$sql   = "select * from calendar";
-$query = mysql_query($sql);
-while ( $row = mysql_fetch_array($query) )
+$sql       = "select * from calendar";
+$statement = $link->prepare($sql);
+$statement->execute();
+$result = $statement->fetchALL(PDO::FETCH_ASSOC);
+
+foreach ( $result as $key => $value )
 {
-    $allday    = $row['allday'];
-    $is_allday = $allday == 1 ? true : false;
-
     $data[] = [
-        'id'     => $row['id'],
-        'title'  => $row['title'],
-        'start'  => date('Y-m-d H:i', $row['starttime']),
-        'end'    => date('Y-m-d H:i', $row['endtime']),
-        //'url' => $row['url'],
-        'allDay' => $is_allday,
-        'color'  => $row['color']
+        'id'     => $value['id'],
+        'title'  => $value['title'],
+        'start'  => date('Y-m-d H:i', $value['starttime']),
+        'end'    => date('Y-m-d H:i', $value['endtime']),
+        'allDay' => $value['allday'] ? true : false,
+        'color'  => $value['color']
     ];
 }
+
 echo json_encode($data);
